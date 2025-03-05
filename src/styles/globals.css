@@ -1,0 +1,162 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+@plugin "daisyui";
+
+@theme {
+  --font-primary:
+    Inter, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+  --color-primary-50: rgb(var(--tw-color-primary-50));
+  --color-primary-100: rgb(var(--tw-color-primary-100));
+  --color-primary-200: rgb(var(--tw-color-primary-200));
+  --color-primary-300: rgb(var(--tw-color-primary-300));
+  --color-primary-400: rgb(var(--tw-color-primary-400));
+  --color-primary-500: rgb(var(--tw-color-primary-500));
+  --color-primary-600: rgb(var(--tw-color-primary-600));
+  --color-primary-700: rgb(var(--tw-color-primary-700));
+  --color-primary-800: rgb(var(--tw-color-primary-800));
+  --color-primary-900: rgb(var(--tw-color-primary-900));
+
+  --color-dark: #222222;
+
+  --animate-flicker: flicker 3s linear infinite;
+  --animate-shimmer: shimmer 1.3s linear infinite;
+
+  @keyframes flicker {
+    0%,
+    19.999%,
+    22%,
+    62.999%,
+    64%,
+    64.999%,
+    70%,
+    100% {
+      opacity: 0.99;
+      filter: drop-shadow(0 0 1px rgba(252, 211, 77))
+        drop-shadow(0 0 15px rgba(245, 158, 11))
+        drop-shadow(0 0 1px rgba(252, 211, 77));
+    }
+    20%,
+    21.999%,
+    63%,
+    63.999%,
+    65%,
+    69.999% {
+      opacity: 0.4;
+      filter: none;
+    }
+  }
+  @keyframes shimmer {
+    0% {
+      background-position: -700px 0;
+    }
+    100% {
+      background-position: 700px 0;
+    }
+  }
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
+
+@layer utilities {
+  :root {
+    /* #region  /**=========== Primary Color =========== */
+    /* !STARTERCONF Customize these variable, copy and paste from /styles/colors.css for list of colors */
+    --tw-color-primary-50: 240 249 255;
+    --tw-color-primary-100: 224 242 254;
+    --tw-color-primary-200: 186 230 253;
+    --tw-color-primary-300: 125 211 252;
+    --tw-color-primary-400: 56 189 248;
+    --tw-color-primary-500: 14 165 233;
+    --tw-color-primary-600: 2 132 199;
+    --tw-color-primary-700: 3 105 161;
+    --tw-color-primary-800: 7 89 133;
+    --tw-color-primary-900: 12 74 110;
+    --color-primary-50: rgb(var(--tw-color-primary-50)); /* #f0f9ff */
+    --color-primary-100: rgb(var(--tw-color-primary-100)); /* #e0f2fe */
+    --color-primary-200: rgb(var(--tw-color-primary-200)); /* #bae6fd */
+    --color-primary-300: rgb(var(--tw-color-primary-300)); /* #7dd3fc */
+    --color-primary-400: rgb(var(--tw-color-primary-400)); /* #38bdf8 */
+    --color-primary-500: rgb(var(--tw-color-primary-500)); /* #0ea5e9 */
+    --color-primary-600: rgb(var(--tw-color-primary-600)); /* #0284c7 */
+    --color-primary-700: rgb(var(--tw-color-primary-700)); /* #0369a1 */
+    --color-primary-800: rgb(var(--tw-color-primary-800)); /* #075985 */
+    --color-primary-900: rgb(var(--tw-color-primary-900)); /* #0c4a6e */
+    /* #endregion  /**======== Primary Color =========== */
+    --ball-size: 10rem;
+  }
+
+  @keyframes move-across {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(calc(100vw - var(--ball-size))); }
+  }
+
+  .animate-move-across {
+    animation: move-across 3s ease-in-out infinite;
+  }
+}
+
+@layer base {
+  /* #region  /**=========== Typography =========== */
+  .h0 {
+    @apply font-primary text-3xl font-bold md:text-5xl;
+  }
+
+  h1,
+  .h1 {
+    @apply font-primary text-2xl font-bold md:text-4xl;
+  }
+
+  h2,
+  .h2 {
+    @apply font-primary text-xl font-bold md:text-3xl;
+  }
+
+  h3,
+  .h3 {
+    @apply font-primary text-lg font-bold md:text-2xl;
+  }
+
+  h4,
+  .h4 {
+    @apply font-primary text-base font-bold md:text-lg;
+  }
+
+  body,
+  .p {
+    @apply font-primary text-sm md:text-base;
+  }
+  /* #endregion  /**======== Typography =========== */
+
+  .layout {
+    /* 1100px */
+    max-width: 68.75rem;
+    @apply mx-auto w-11/12;
+  }
+
+  .bg-dark a.custom-link {
+    @apply border-gray-200 hover:border-gray-200/0;
+  }
+
+  /* Class to adjust with sticky footer */
+  .min-h-main {
+    @apply min-h-[calc(100vh-56px)];
+  }
+}
