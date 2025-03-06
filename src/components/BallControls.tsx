@@ -1,3 +1,5 @@
+import { useRef } from 'react';
+
 interface BallControlsProps {
   ballSize: number;
   ballSpeed: number;
@@ -9,7 +11,9 @@ interface BallControlsProps {
   onBallColorChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBgColorChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onResetClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  onStartClick: (value: boolean, resetAnimation?: boolean) => void;
+  onUndoClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onIsRunningChange: (value: boolean, resetAnimation?: boolean) => void;
+  showUndo: boolean;
 }
 
 export const BallControls = (props: BallControlsProps) => {
@@ -23,17 +27,21 @@ export const BallControls = (props: BallControlsProps) => {
     onBallSpeedChange,
     onBallSizeChange,
     onBgColorChange,
-    onStartClick,
+    onIsRunningChange,
     onResetClick,
+    onUndoClick,
+    showUndo,
   } = props;
 
+  const wasRunningRef = useRef<boolean>(false);
+
   const handleSpeedMouseDown = () => {
-    // Pause the animation when the slider is being dragged
-    onStartClick(true);
+    wasRunningRef.current = isRunning;
+    onIsRunningChange(false);
   };
 
   const handleSpeedMouseUp = () => {
-    onStartClick(false);
+    onIsRunningChange(wasRunningRef.current);
   };
 
   return (
@@ -42,13 +50,22 @@ export const BallControls = (props: BallControlsProps) => {
         className="btn self-center"
         onClick={e => {
           e.stopPropagation();
-          onStartClick(!isRunning, true);
+          onIsRunningChange(!isRunning, true);
         }}
       >
-        {isRunning ? 'Start' : 'Stop'}
+        {isRunning ? 'Stop' : 'Start'}
       </button>
-      <button className="btn self-center" onClick={onResetClick}>
-        Reset
+      <button
+        className="btn self-center"
+        onClick={e => {
+          if (showUndo) {
+            onUndoClick(e);
+          } else {
+            onResetClick(e);
+          }
+        }}
+      >
+        {showUndo ? 'Undo' : 'Reset'}
       </button>
       <div className="flex w-full flex-col justify-between">
         Ball Size: {ballSize}

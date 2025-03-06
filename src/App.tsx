@@ -10,16 +10,18 @@ import {
 } from './hooks/useAppStorage.ts';
 
 export function App() {
-  const [appStorage, setAppStorage] = useAppStorage(initialAppState);
-  const { ballSpeed, ballColor, bgColor, ballSize } = appStorage;
-  const [running, setRunning] = useState(true);
+  const [appState, setAppState] = useAppStorage(initialAppState);
+  const { ballSpeed, ballColor, bgColor, ballSize } = appState;
+  const [isRunning, setIsRunning] = useState(false);
   const [animationDuration, setAnimationDuration] = useState(5);
   const [resetKey, forceUpdate] = useReducer(state => state + 1, 0);
+  const [timeoutId, setTimeoutId] = useState<number | null>(null);
+  const [previousState, setPreviousState] = useState<AppState | null>(null);
 
   const calculatedAnimationDuration = animationDuration / ballSpeed;
 
-  const handleStartClick = (value: boolean, resetAnimation?: boolean) => {
-    setRunning(value);
+  const handleIsRunningChange = (value: boolean, resetAnimation?: boolean) => {
+    setIsRunning(value);
     if (resetAnimation) {
       forceUpdate();
     }
@@ -27,49 +29,73 @@ export function App() {
 
   const handleResetClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    setRunning(true);
-    setAppStorage(() => initialAppState);
+    // Save the current state for undo purposes
+    setPreviousState({ ...appState });
+
+    setIsRunning(false);
+    setAppState(() => initialAppState);
     forceUpdate();
+
+    // Set a timer for undo
+    const id = window.setTimeout(() => {
+      setPreviousState(null);
+    }, 3000);
+    setTimeoutId(id);
+  };
+
+  const handleUndoClick = () => {
+    // Undo the reset by restoring the previous state
+    if (timeoutId) {
+      clearTimeout(timeoutId); // Clear the timeout
+    }
+    if (previousState) {
+      setAppState(previousState); // Restore the previous state
+    }
+    setPreviousState(null);
   };
 
   const handleBallSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const ballSizeLocal = Number(e.target.value);
-    setAppStorage(
+    setAppState(
       (prevState): AppState => ({
         ...prevState,
         ballSize: ballSizeLocal,
       }),
     );
+    handleUndoClick();
   };
 
   const handleBallSpeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const ballSpeedLocal = Number(e.target.value);
-    setAppStorage(
+    setAppState(
       (prevState): AppState => ({
         ...prevState,
         ballSpeed: ballSpeedLocal,
       }),
     );
+    handleUndoClick();
   };
 
   const handleBallColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.currentTarget.value;
-    setAppStorage(
+    setAppState(
       (prevState): AppState => ({
         ...prevState,
         ballColor: value,
       }),
     );
+    handleUndoClick();
   };
 
   const handleBgColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.currentTarget.value;
-    setAppStorage(
+    setAppState(
       (prevState): AppState => ({
         ...prevState,
         bgColor: value,
       }),
     );
+    handleUndoClick();
   };
 
   useEffect(() => {
@@ -91,17 +117,19 @@ export function App() {
   return (
     <div className="flex min-h-screen flex-col">
       <BallControls
-        isRunning={running}
+        isRunning={isRunning}
         ballSpeed={ballSpeed}
         ballColor={ballColor}
         ballSize={ballSize}
         bgColor={bgColor}
+        showUndo={Boolean(previousState)}
         onBallSizeChange={handleBallSizeChange}
         onBgColorChange={handleBgColorChange}
         onBallColorChange={handleBallColorChange}
         onBallSpeedChange={handleBallSpeedChange}
-        onStartClick={handleStartClick}
+        onIsRunningChange={handleIsRunningChange}
         onResetClick={handleResetClick}
+        onUndoClick={handleUndoClick}
       />
       <div
         className="flex flex-1 flex-col justify-center"
@@ -111,7 +139,7 @@ export function App() {
       >
         <Ball
           key={resetKey}
-          pause={running}
+          pause={!isRunning}
           ballSize={ballSize}
           ballColor={ballColor}
           animationDuration={calculatedAnimationDuration}
