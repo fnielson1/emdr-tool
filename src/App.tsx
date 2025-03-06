@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from 'react';
+import { useCallback, useEffect, useReducer, useState } from 'react';
 
 import { Ball } from './components/Ball.tsx';
 import { BallControls } from './components/BallControls.tsx';
@@ -19,38 +19,26 @@ export function App() {
   const [timeoutId, setTimeoutId] = useState<number | null>(null);
   const [previousState, setPreviousState] = useState<AppState | null>(null);
 
-  useKeyboardWatcher(setAppState);
-
   const calculatedAnimationDuration = animationDuration / ballSpeed;
 
   const updateState = (updatedValue: Partial<AppState>) => {
     setAppState(prevState => ({ ...prevState, ...updatedValue }));
   };
 
-  const handleIsRunningChange = (value: boolean, resetAnimation?: boolean) => {
-    setIsRunning(value);
-    if (resetAnimation) {
-      forceUpdate();
-    }
-  };
-
-  const handleResetClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
+  const handleResetClick = useCallback(() => {
     // Save the current state for undo purposes
     setPreviousState({ ...appState });
 
-    setIsRunning(false);
     setAppState(() => initialAppState);
-    forceUpdate();
 
     // Set a timer for undo
     const id = window.setTimeout(() => {
       setPreviousState(null);
     }, 3000);
     setTimeoutId(id);
-  };
+  }, [appState, setAppState]);
 
-  const handleUndoClick = () => {
+  const handleUndoClick = useCallback(() => {
     // Undo the reset by restoring the previous state
     if (timeoutId) {
       clearTimeout(timeoutId); // Clear the timeout
@@ -59,6 +47,15 @@ export function App() {
       setAppState(previousState); // Restore the previous state
     }
     setPreviousState(null);
+  }, [previousState, setAppState, timeoutId]);
+
+  useKeyboardWatcher(setAppState);
+
+  const handleIsRunningChange = (value: boolean, resetAnimation?: boolean) => {
+    setIsRunning(value);
+    if (resetAnimation) {
+      forceUpdate();
+    }
   };
 
   const handleBallSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,6 +92,13 @@ export function App() {
           setIsRunning(false);
           forceUpdate();
           break;
+        case 'r':
+          if (previousState) {
+            handleUndoClick();
+          } else {
+            handleResetClick();
+          }
+          break;
       }
     };
     const updateDuration = () => {
@@ -111,7 +115,7 @@ export function App() {
       window.removeEventListener('keyup', onKeyPress);
       window.removeEventListener('resize', updateDuration);
     };
-  }, []);
+  }, [handleResetClick, handleUndoClick, previousState]);
 
   return (
     <div className="flex min-h-screen flex-col">

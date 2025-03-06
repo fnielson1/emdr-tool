@@ -19,8 +19,8 @@ interface BallControlsProps {
   onBallSpeedChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBallColorChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBgColorChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onResetClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  onUndoClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onResetClick: () => void;
+  onUndoClick: () => void;
   onIsRunningChange: (value: boolean, resetAnimation?: boolean) => void;
   showUndo: boolean;
 }
@@ -68,10 +68,11 @@ export const BallControls = (props: BallControlsProps) => {
       <button
         className="btn self-center"
         onClick={e => {
+          e.stopPropagation();
           if (showUndo) {
-            onUndoClick(e);
+            onUndoClick();
           } else {
-            onResetClick(e);
+            onResetClick();
           }
         }}
         onFocus={e => e.target.blur()}
