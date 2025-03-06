@@ -12,9 +12,11 @@ import {
 
 export function useKeyboardWatcher(
   setAppState: React.Dispatch<React.SetStateAction<AppState>>,
+  cancelUndo: () => void,
 ) {
   useEffect(() => {
     const onKeyPress = (e: KeyboardEvent) => {
+      cancelUndo();
       switch (e.key) {
         case 'w':
         case 'ArrowUp':

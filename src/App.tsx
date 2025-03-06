@@ -22,13 +22,14 @@ export function App() {
   const calculatedAnimationDuration = animationDuration / ballSpeed;
 
   const updateState = (updatedValue: Partial<AppState>) => {
-    setAppState(prevState => ({ ...prevState, ...updatedValue }));
+    setAppState((prevState): AppState => ({ ...prevState, ...updatedValue }));
   };
 
   const handleResetClick = useCallback(() => {
-    // Save the current state for undo purposes
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
     setPreviousState({ ...appState });
-
     setAppState(() => initialAppState);
 
     // Set a timer for undo
@@ -36,7 +37,7 @@ export function App() {
       setPreviousState(null);
     }, 3000);
     setTimeoutId(id);
-  }, [appState, setAppState]);
+  }, [appState, setAppState, timeoutId]);
 
   const handleUndoClick = useCallback(() => {
     // Undo the reset by restoring the previous state
@@ -49,7 +50,14 @@ export function App() {
     setPreviousState(null);
   }, [previousState, setAppState, timeoutId]);
 
-  useKeyboardWatcher(setAppState);
+  const handleCancelUndo = useCallback(() => {
+    if (timeoutId) {
+      clearTimeout(timeoutId); // Clear the timeout
+    }
+    setPreviousState(null);
+  }, [timeoutId]);
+
+  useKeyboardWatcher(setAppState, handleCancelUndo);
 
   const handleIsRunningChange = (value: boolean, resetAnimation?: boolean) => {
     setIsRunning(value);
@@ -61,25 +69,25 @@ export function App() {
   const handleBallSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
     updateState({ ballSize: value });
-    handleUndoClick();
+    handleCancelUndo();
   };
 
   const handleBallSpeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
     updateState({ ballSpeed: value });
-    handleUndoClick();
+    handleCancelUndo();
   };
 
   const handleBallColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.currentTarget.value;
     updateState({ ballColor: value });
-    handleUndoClick();
+    handleCancelUndo();
   };
 
   const handleBgColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.currentTarget.value;
     updateState({ bgColor: value });
-    handleUndoClick();
+    handleCancelUndo();
   };
 
   useEffect(() => {
@@ -91,13 +99,6 @@ export function App() {
         case 'Escape':
           setIsRunning(false);
           forceUpdate();
-          break;
-        case 'r':
-          if (previousState) {
-            handleUndoClick();
-          } else {
-            handleResetClick();
-          }
           break;
       }
     };
@@ -115,7 +116,7 @@ export function App() {
       window.removeEventListener('keyup', onKeyPress);
       window.removeEventListener('resize', updateDuration);
     };
-  }, [handleResetClick, handleUndoClick, previousState]);
+  }, [handleResetClick, handleUndoClick]);
 
   return (
     <div className="flex min-h-screen flex-col">
