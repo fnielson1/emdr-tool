@@ -4,10 +4,11 @@ interface BallProps {
   ballSize: number;
   ballColor: string;
   animationDuration: number;
+  pause: boolean;
 }
 
 export const Ball = (props: BallProps) => {
-  const { ballSize, ballColor, animationDuration } = props;
+  const { ballSize, ballColor, animationDuration, pause } = props;
 
   return (
     <div
@@ -17,8 +18,8 @@ export const Ball = (props: BallProps) => {
           width: `${ballSize}rem`,
           height: `${ballSize}rem`,
           '--ball-size': `${ballSize}rem`,
-          '--move-distance': `calc(100vw - ${ballSize}rem)`, // Set the distance to the full viewport width
           '--animation-duration': `${animationDuration}s`, // Use the slider value to control the speed (duration)
+          animationPlayState: pause ? 'paused' : 'running',
           backgroundColor: ballColor,
         } as CSSProperties
       }

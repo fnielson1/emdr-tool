@@ -102,7 +102,6 @@
     /* #endregion  /**======== Primary Color =========== */
 
     --ball-size: 10rem;
-    --move-distance: calc(100vw - var(--ball-size)); /* The ball will travel the entire width of the screen */
     --animation-duration: 5s; /* The duration starts at 5 seconds */
   }
 
@@ -111,7 +110,7 @@
       transform: translateX(0); /* Start at the left */
     }
     50% {
-      transform: translateX(var(--move-distance)); /* Move across the viewport */
+      transform: translateX(calc(100vw - var(--ball-size))); /* Move across the viewport */
     }
   }
 
