@@ -1,5 +1,14 @@
 import { useRef } from 'react';
 
+import {
+  BALL_SIZE_STEP,
+  BALL_SPEED_STEP,
+  MAX_BALL_SIZE,
+  MAX_BALL_SPEED,
+  MIN_BALL_SIZE,
+  MIN_BALL_SPEED,
+} from '../hooks/useAppStorage.ts';
+
 interface BallControlsProps {
   ballSize: number;
   ballSpeed: number;
@@ -52,6 +61,7 @@ export const BallControls = (props: BallControlsProps) => {
           e.stopPropagation();
           onIsRunningChange(!isRunning, true);
         }}
+        onFocus={e => e.target.blur()}
       >
         {isRunning ? 'Stop' : 'Start'}
       </button>
@@ -64,33 +74,38 @@ export const BallControls = (props: BallControlsProps) => {
             onResetClick(e);
           }
         }}
+        onFocus={e => e.target.blur()}
       >
         {showUndo ? 'Undo' : 'Reset'}
       </button>
       <div className="flex w-full flex-col justify-between">
-        Ball Size: {ballSize}
+        Ball Size: {ballSize.toFixed(0)}
         <input
           type="range"
-          min="1"
-          max="25"
-          step="1"
+          min={MIN_BALL_SIZE}
+          max={MAX_BALL_SIZE}
+          step={BALL_SIZE_STEP}
           value={ballSize}
           onChange={onBallSizeChange}
           className="range range-primary"
+          onFocus={e => e.target.blur()}
+          title="Up Arrow, Down Arrow"
         />
       </div>
       <div className="flex w-full flex-col justify-between">
-        Ball Speed: {ballSpeed.toFixed(2)}
+        Ball Speed: {ballSpeed.toFixed(1)}
         <input
           type="range"
-          min="0.1"
-          max="20"
-          step="0.1"
+          min={MIN_BALL_SPEED}
+          max={MAX_BALL_SPEED}
+          step={BALL_SPEED_STEP}
           value={ballSpeed}
           onChange={onBallSpeedChange}
           className="range range-primary"
           onMouseDown={handleSpeedMouseDown}
           onMouseUp={handleSpeedMouseUp}
+          onFocus={e => e.target.blur()}
+          title="Left Arrow, Right Arrow"
         />
       </div>
       <div className="flex w-full flex-col items-center justify-between">
@@ -100,6 +115,7 @@ export const BallControls = (props: BallControlsProps) => {
           value={ballColor}
           onChange={onBallColorChange}
           className="h-10 w-16 cursor-pointer rounded-3xl"
+          onFocus={e => e.target.blur()}
         />
       </div>
       <div className="flex w-full flex-col items-center justify-between text-nowrap">
@@ -109,6 +125,7 @@ export const BallControls = (props: BallControlsProps) => {
           value={bgColor}
           onChange={onBgColorChange}
           className="h-10 w-16 cursor-pointer rounded-3xl"
+          onFocus={e => e.target.blur()}
         />
       </div>
     </div>

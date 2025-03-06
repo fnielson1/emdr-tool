@@ -8,6 +8,7 @@ import {
   initialAppState,
   useAppStorage,
 } from './hooks/useAppStorage.ts';
+import { useKeyboardWatcher } from './hooks/useKeyboardWatcher.ts';
 
 export function App() {
   const [appState, setAppState] = useAppStorage(initialAppState);
@@ -18,7 +19,13 @@ export function App() {
   const [timeoutId, setTimeoutId] = useState<number | null>(null);
   const [previousState, setPreviousState] = useState<AppState | null>(null);
 
+  useKeyboardWatcher(setAppState);
+
   const calculatedAnimationDuration = animationDuration / ballSpeed;
+
+  const updateState = (updatedValue: Partial<AppState>) => {
+    setAppState(prevState => ({ ...prevState, ...updatedValue }));
+  };
 
   const handleIsRunningChange = (value: boolean, resetAnimation?: boolean) => {
     setIsRunning(value);
@@ -55,61 +62,53 @@ export function App() {
   };
 
   const handleBallSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const ballSizeLocal = Number(e.target.value);
-    setAppState(
-      (prevState): AppState => ({
-        ...prevState,
-        ballSize: ballSizeLocal,
-      }),
-    );
+    const value = Number(e.target.value);
+    updateState({ ballSize: value });
     handleUndoClick();
   };
 
   const handleBallSpeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const ballSpeedLocal = Number(e.target.value);
-    setAppState(
-      (prevState): AppState => ({
-        ...prevState,
-        ballSpeed: ballSpeedLocal,
-      }),
-    );
+    const value = Number(e.target.value);
+    updateState({ ballSpeed: value });
     handleUndoClick();
   };
 
   const handleBallColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.currentTarget.value;
-    setAppState(
-      (prevState): AppState => ({
-        ...prevState,
-        ballColor: value,
-      }),
-    );
+    updateState({ ballColor: value });
     handleUndoClick();
   };
 
   const handleBgColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.currentTarget.value;
-    setAppState(
-      (prevState): AppState => ({
-        ...prevState,
-        bgColor: value,
-      }),
-    );
+    updateState({ bgColor: value });
     handleUndoClick();
   };
 
   useEffect(() => {
+    const onKeyPress = (e: KeyboardEvent) => {
+      switch (e.key) {
+        case ' ':
+          setIsRunning(prevState => !prevState);
+          break;
+        case 'Escape':
+          setIsRunning(false);
+          forceUpdate();
+          break;
+      }
+    };
     const updateDuration = () => {
       // Dynamically calculate the animation duration based on the screen size (viewport width)
       const screenWidth = window.innerWidth; // Get the current screen width
       const calculatedDuration = screenWidth / 100; // This formula adjusts duration based on screen width
       setAnimationDuration(calculatedDuration); // Set the duration dynamically
     };
-
     updateDuration();
-    // Add resize event listener
+
+    window.addEventListener('keyup', onKeyPress);
     window.addEventListener('resize', updateDuration);
     return () => {
+      window.removeEventListener('keyup', onKeyPress);
       window.removeEventListener('resize', updateDuration);
     };
   }, []);

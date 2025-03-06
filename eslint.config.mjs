@@ -1,6 +1,7 @@
 import { FlatCompat } from '@eslint/eslintrc';
 import js from '@eslint/js';
 import typescriptEslint from '@typescript-eslint/eslint-plugin';
+import reactHooks from 'eslint-plugin-react-hooks';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import unusedImports from 'eslint-plugin-unused-imports';
 import globals from 'globals';
@@ -20,6 +21,7 @@ export default [
     'plugin:@typescript-eslint/recommended',
     'eslint:recommended',
     'plugin:react/recommended',
+    'plugin:react-hooks/recommended',
     'prettier',
   ),
   {
@@ -32,6 +34,7 @@ export default [
       '@typescript-eslint': typescriptEslint,
       'simple-import-sort': simpleImportSort,
       'unused-imports': unusedImports,
+      'react-hooks': reactHooks,
     },
 
     languageOptions: {
@@ -44,6 +47,7 @@ export default [
     },
 
     rules: {
+      'react-hooks/exhaustive-deps': 'error',
       '@typescript-eslint/no-empty-object-type': [
         'error',
         { allowInterfaces: 'with-single-extends' },

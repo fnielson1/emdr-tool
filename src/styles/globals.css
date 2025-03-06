@@ -106,11 +106,14 @@
   }
 
   @keyframes move-across {
-    0%, 100% {
+    0%,
+    100% {
       transform: translateX(0); /* Start at the left */
     }
     50% {
-      transform: translateX(calc(100vw - var(--ball-size))); /* Move across the viewport */
+      transform: translateX(
+        calc(100vw - var(--ball-size))
+      ); /* Move across the viewport */
     }
   }
 
