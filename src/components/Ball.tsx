@@ -21,6 +21,7 @@ export const Ball = (props: BallProps) => {
           '--animation-duration': `${animationDuration}s`, // Use the slider value to control the speed (duration)
           animationPlayState: pause ? 'paused' : 'running',
           backgroundColor: ballColor,
+          boxShadow: `0px 0px 0px ${ballColor}`,
         } as CSSProperties
       }
     ></div>
