@@ -7,7 +7,7 @@
   "license": "LGPL-3.0-or-later",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && shx cp README.md ./dist/README.md",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix && pnpm format",
     "format": "prettier -w src",
@@ -40,6 +40,7 @@
     "install": "^0.13.0",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
+    "shx": "^0.3.4",
     "tailwindcss": "^4.0.10",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.24.1",
