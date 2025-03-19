@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 
+import { BallRange } from './BallRange.tsx';
 import {
   BALL_SIZE_STEP,
   BALL_SPEED_STEP,
@@ -8,6 +9,7 @@ import {
   MIN_BALL_SIZE,
   MIN_BALL_SPEED,
 } from '../hooks/useAppStorage.ts';
+import type { BallRangeChangeType } from '../types.ts';
 
 interface BallControlsProps {
   ballSize: number;
@@ -15,10 +17,10 @@ interface BallControlsProps {
   ballColor: string;
   bgColor: string;
   isRunning: boolean;
-  onBallSizeChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onBallSpeedChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onBallColorChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onBgColorChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBallSizeChange: (e: BallRangeChangeType) => void;
+  onBallSpeedChange: (e: BallRangeChangeType) => void;
+  onBallColorChange: (e: BallRangeChangeType) => void;
+  onBgColorChange: (e: BallRangeChangeType) => void;
   onResetClick: () => void;
   onUndoClick: () => void;
   onIsRunningChange: (value: boolean, resetAnimation?: boolean) => void;
@@ -54,7 +56,7 @@ export const BallControls = (props: BallControlsProps) => {
   };
 
   return (
-    <div className="join join-horizontal bg-base-100 flex w-full justify-between gap-4 p-5 pb-2">
+    <div className="bg-base-100 flex w-full flex-wrap justify-between gap-1 p-5 pb-2 md:flex-nowrap md:gap-4">
       <button
         className="btn self-center"
         onClick={e => {
@@ -79,38 +81,30 @@ export const BallControls = (props: BallControlsProps) => {
       >
         {showUndo ? 'Undo' : 'Reset'}
       </button>
-      <div className="flex w-full flex-col justify-between">
-        Ball Size: {ballSize.toFixed(0)}
-        <input
-          type="range"
-          min={MIN_BALL_SIZE}
-          max={MAX_BALL_SIZE}
-          step={BALL_SIZE_STEP}
-          value={ballSize}
-          onChange={onBallSizeChange}
-          className="range range-primary"
-          onFocus={e => e.target.blur()}
-          title="Up Arrow, Down Arrow"
-        />
-      </div>
-      <div className="flex w-full flex-col justify-between">
-        Ball Speed: {ballSpeed.toFixed(1)}
-        <input
-          type="range"
-          min={MIN_BALL_SPEED}
-          max={MAX_BALL_SPEED}
-          step={BALL_SPEED_STEP}
-          value={ballSpeed}
-          onChange={onBallSpeedChange}
-          className="range range-primary"
-          onMouseDown={handleSpeedMouseDown}
-          onMouseUp={handleSpeedMouseUp}
-          onFocus={e => e.target.blur()}
-          title="Left Arrow, Right Arrow"
-        />
-      </div>
-      <div className="flex w-full flex-col items-center justify-between">
-        Ball Color
+      <BallRange
+        text={`Ball Size: ${ballSize.toFixed(0)}`}
+        value={ballSize}
+        onChange={onBallSizeChange}
+        min={MIN_BALL_SIZE}
+        max={MAX_BALL_SIZE}
+        step={BALL_SIZE_STEP}
+        onFocus={e => e.target.blur()}
+        title="Up Arrow, Down Arrow"
+      />
+      <BallRange
+        text={`Ball Speed: ${ballSpeed.toFixed(0)}`}
+        value={ballSpeed}
+        min={MIN_BALL_SPEED}
+        max={MAX_BALL_SPEED}
+        step={BALL_SPEED_STEP}
+        onChange={onBallSpeedChange}
+        onMouseDown={handleSpeedMouseDown}
+        onMouseUp={handleSpeedMouseUp}
+        onFocus={e => e.target.blur()}
+        title="Left Arrow, Right Arrow"
+      />
+      <div className="flex w-full items-center gap-2 md:flex-col md:justify-between">
+        <div className="hidden md:block">Ball Color</div>
         <input
           type="color"
           value={ballColor}
@@ -118,9 +112,10 @@ export const BallControls = (props: BallControlsProps) => {
           className="h-10 w-16 cursor-pointer rounded-3xl"
           onFocus={e => e.target.blur()}
         />
+        <div className="block md:hidden">Ball Color</div>
       </div>
-      <div className="flex w-full flex-col items-center justify-between text-nowrap">
-        Background Color
+      <div className="flex w-full items-center gap-2 md:flex-col md:justify-between">
+        <div className="hidden md:block">Background Color</div>
         <input
           type="color"
           value={bgColor}
@@ -128,6 +123,7 @@ export const BallControls = (props: BallControlsProps) => {
           className="h-10 w-16 cursor-pointer rounded-3xl"
           onFocus={e => e.target.blur()}
         />
+        <div className="block md:hidden">Background Color</div>
       </div>
     </div>
   );

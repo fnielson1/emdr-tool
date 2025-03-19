@@ -9,6 +9,7 @@ import {
   useAppStorage,
 } from './hooks/useAppStorage.ts';
 import { useKeyboardWatcher } from './hooks/useKeyboardWatcher.ts';
+import type { BallRangeChangeType } from './types.ts';
 
 export function App() {
   const [appState, setAppState] = useAppStorage(initialAppState);
@@ -66,25 +67,25 @@ export function App() {
     }
   };
 
-  const handleBallSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Number(e.target.value);
+  const handleBallSizeChange = (e: BallRangeChangeType) => {
+    const value = Number(e.currentTarget.value);
     updateState({ ballSize: value });
     handleCancelUndo();
   };
 
-  const handleBallSpeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Number(e.target.value);
+  const handleBallSpeedChange = (e: BallRangeChangeType) => {
+    const value = Number(e.currentTarget.value);
     updateState({ ballSpeed: value });
     handleCancelUndo();
   };
 
-  const handleBallColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBallColorChange = (e: BallRangeChangeType) => {
     const value = e.currentTarget.value;
     updateState({ ballColor: value });
     handleCancelUndo();
   };
 
-  const handleBgColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBgColorChange = (e: BallRangeChangeType) => {
     const value = e.currentTarget.value;
     updateState({ bgColor: value });
     handleCancelUndo();
