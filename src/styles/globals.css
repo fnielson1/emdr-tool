@@ -101,24 +101,6 @@
     --color-primary-900: rgb(var(--tw-color-primary-900)); /* #0c4a6e */
     /* #endregion  /**======== Primary Color =========== */
 
-    --ball-size: 10rem;
-    --animation-duration: 5s; /* The duration starts at 5 seconds */
-  }
-
-  @keyframes move-across {
-    0%,
-    100% {
-      transform: translateX(0); /* Start at the left */
-    }
-    50% {
-      transform: translateX(
-        calc(100vw - var(--ball-size))
-      ); /* Move across the viewport */
-    }
-  }
-
-  .animate-move-across {
-    animation: move-across var(--animation-duration) linear infinite;
   }
 }
 

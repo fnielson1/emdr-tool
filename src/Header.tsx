@@ -1,4 +1,4 @@
-export const Footer = () => {
+export const Header = () => {
   return (
     <footer className="footer sm:footer-horizontal bg-neutral text-neutral-content flex justify-center p-2">
       <div>EMDR Tool by Frank Nielson</div>

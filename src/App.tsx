@@ -1,26 +1,26 @@
-import { useCallback, useEffect, useReducer, useState } from 'react';
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 
+import { AppContext, type Boundary } from './AppContext.ts';
 import { Ball } from './components/Ball.tsx';
 import { BallControls } from './components/BallControls.tsx';
-import { Footer } from './Footer.tsx';
-import {
-  type AppState,
-  initialAppState,
-  useAppStorage,
-} from './hooks/useAppStorage.ts';
+import type { AppState } from './constants.ts';
+import { Header } from './Header.tsx';
+import { initialAppState, useAppStorage } from './hooks/useAppStorage.ts';
 import { useKeyboardWatcher } from './hooks/useKeyboardWatcher.ts';
-import type { BallRangeChangeType } from './types.ts';
 
 export function App() {
   const [appState, setAppState] = useAppStorage(initialAppState);
-  const { ballSpeed, ballColor, bgColor, ballSize } = appState;
+  const { bgColor } = appState;
   const [isRunning, setIsRunning] = useState(false);
-  const [animationDuration, setAnimationDuration] = useState(5);
   const [resetKey, forceUpdate] = useReducer(state => state + 1, 0);
   const [timeoutId, setTimeoutId] = useState<number | null>(null);
   const [previousState, setPreviousState] = useState<AppState | null>(null);
-
-  const calculatedAnimationDuration = animationDuration / ballSpeed;
+  const [emdrBoundary, setEmdrBoundary] = useState<Boundary>({
+    width: 0,
+    height: 0,
+    top: 0,
+  });
+  const parentRef = useRef<HTMLDivElement>(null);
 
   const updateState = (updatedValue: Partial<AppState>) => {
     setAppState((prevState): AppState => ({ ...prevState, ...updatedValue }));
@@ -67,30 +67,6 @@ export function App() {
     }
   };
 
-  const handleBallSizeChange = (e: BallRangeChangeType) => {
-    const value = Number(e.currentTarget.value);
-    updateState({ ballSize: value });
-    handleCancelUndo();
-  };
-
-  const handleBallSpeedChange = (e: BallRangeChangeType) => {
-    const value = Number(e.currentTarget.value);
-    updateState({ ballSpeed: value });
-    handleCancelUndo();
-  };
-
-  const handleBallColorChange = (e: BallRangeChangeType) => {
-    const value = e.currentTarget.value;
-    updateState({ ballColor: value });
-    handleCancelUndo();
-  };
-
-  const handleBgColorChange = (e: BallRangeChangeType) => {
-    const value = e.currentTarget.value;
-    updateState({ bgColor: value });
-    handleCancelUndo();
-  };
-
   useEffect(() => {
     const onKeyPress = (e: KeyboardEvent) => {
       switch (e.key) {
@@ -103,54 +79,59 @@ export function App() {
           break;
       }
     };
-    const updateDuration = () => {
-      // Dynamically calculate the animation duration based on the screen size (viewport width)
-      const screenWidth = window.innerWidth; // Get the current screen width
-      const calculatedDuration = screenWidth / 100; // This formula adjusts duration based on screen width
-      setAnimationDuration(calculatedDuration); // Set the duration dynamically
-    };
-    updateDuration();
 
     window.addEventListener('keyup', onKeyPress);
-    window.addEventListener('resize', updateDuration);
     return () => {
       window.removeEventListener('keyup', onKeyPress);
-      window.removeEventListener('resize', updateDuration);
     };
   }, [handleResetClick, handleUndoClick]);
 
+  useEffect(() => {
+    const element = parentRef.current;
+    if (!element) return;
+
+    const observer = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        const { width, height, top } = entry.target.getBoundingClientRect();
+        setEmdrBoundary({ width, height, top });
+      }
+    });
+    observer.observe(element);
+
+    const { width, height, top } = element.getBoundingClientRect();
+    setEmdrBoundary({ width, height, top });
+
+    // Clean up
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="flex min-h-screen flex-col">
-      <BallControls
-        isRunning={isRunning}
-        ballSpeed={ballSpeed}
-        ballColor={ballColor}
-        ballSize={ballSize}
-        bgColor={bgColor}
-        showUndo={Boolean(previousState)}
-        onBallSizeChange={handleBallSizeChange}
-        onBgColorChange={handleBgColorChange}
-        onBallColorChange={handleBallColorChange}
-        onBallSpeedChange={handleBallSpeedChange}
-        onIsRunningChange={handleIsRunningChange}
-        onResetClick={handleResetClick}
-        onUndoClick={handleUndoClick}
-      />
-      <div
-        className="flex flex-1 flex-col justify-center"
-        style={{
-          backgroundColor: bgColor,
-        }}
-      >
-        <Ball
-          key={resetKey}
-          pause={!isRunning}
-          ballSize={ballSize}
-          ballColor={ballColor}
-          animationDuration={calculatedAnimationDuration}
-        />
+    <AppContext
+      value={{
+        appState,
+        isRunning,
+        emdrBoundary,
+        onCancelUndo: handleCancelUndo,
+        onIsRunningChange: handleIsRunningChange,
+        onResetClick: handleResetClick,
+        onUndoClick: handleUndoClick,
+        showUndo: Boolean(previousState),
+        onUpdateState: updateState,
+      }}
+    >
+      <div className="flex min-h-screen flex-col overflow-clip">
+        <Header />
+        <BallControls />
+        <div
+          ref={parentRef}
+          className="flex flex-1 flex-col"
+          style={{
+            backgroundColor: bgColor,
+          }}
+        >
+          <Ball key={resetKey} pause={!isRunning} />
+        </div>
       </div>
-      <Footer />
-    </div>
+    </AppContext>
   );
 }

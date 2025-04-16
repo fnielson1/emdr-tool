@@ -8,7 +8,7 @@ import {
   MAX_BALL_SPEED,
   MIN_BALL_SIZE,
   MIN_BALL_SPEED,
-} from './useAppStorage.ts';
+} from '../constants.ts';
 
 export function useKeyboardWatcher(
   setAppState: React.Dispatch<React.SetStateAction<AppState>>,
@@ -16,10 +16,13 @@ export function useKeyboardWatcher(
 ) {
   useEffect(() => {
     const onKeyPress = (e: KeyboardEvent) => {
+      let keyHandled = false;
       cancelUndo();
+
       switch (e.key) {
         case 'w':
         case 'ArrowUp':
+          keyHandled = true;
           setAppState(
             (prevState): AppState => ({
               ...prevState,
@@ -32,6 +35,7 @@ export function useKeyboardWatcher(
           break;
         case 's':
         case 'ArrowDown':
+          keyHandled = true;
           setAppState(
             (prevState): AppState => ({
               ...prevState,
@@ -44,6 +48,7 @@ export function useKeyboardWatcher(
           break;
         case 'd':
         case 'ArrowRight':
+          keyHandled = true;
           setAppState(
             (prevState): AppState => ({
               ...prevState,
@@ -56,6 +61,7 @@ export function useKeyboardWatcher(
           break;
         case 'a':
         case 'ArrowLeft':
+          keyHandled = true;
           setAppState(
             (prevState): AppState => ({
               ...prevState,
@@ -67,11 +73,15 @@ export function useKeyboardWatcher(
           );
           break;
       }
+      if (keyHandled) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
     };
 
     window.addEventListener('keydown', onKeyPress);
     return () => {
       window.removeEventListener('keydown', onKeyPress);
     };
-  }, [setAppState]);
+  }, [cancelUndo, setAppState]);
 }
