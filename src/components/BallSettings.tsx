@@ -1,9 +1,8 @@
 import { useEffect, useRef } from 'react';
 
 import { HamburgerIcon } from './HamburgerIcon.tsx';
-import { BallDirection } from '../constants.ts';
 import { useAppContext } from '../hooks/useAppContext.ts';
-import type { BallRangeChangeType } from '../types.ts';
+import { BallDirection, type BallRangeChangeType } from '../types.ts';
 
 interface BallSettingsProps {
   className?: string;

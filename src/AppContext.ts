@@ -1,12 +1,6 @@
 import { createContext } from 'react';
 
-import type { AppState } from './constants.ts';
-
-export interface Boundary {
-  width: number;
-  height: number;
-  top: number;
-}
+import type { AppState, Boundary } from './types.ts';
 
 export interface AppContextValue {
   isRunning: boolean;

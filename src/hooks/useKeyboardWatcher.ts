@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 
 import {
-  type AppState,
   BALL_SIZE_STEP,
   BALL_SPEED_STEP,
   MAX_BALL_SIZE,
@@ -9,6 +8,7 @@ import {
   MIN_BALL_SIZE,
   MIN_BALL_SPEED,
 } from '../constants.ts';
+import type { AppState } from '../types.ts';
 
 export function useKeyboardWatcher(
   setAppState: React.Dispatch<React.SetStateAction<AppState>>,

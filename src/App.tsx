@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 
-import { AppContext, type Boundary } from './AppContext.ts';
+import { AppContext } from './AppContext.ts';
 import { Ball } from './components/Ball.tsx';
 import { BallControls } from './components/BallControls.tsx';
-import type { AppState } from './constants.ts';
 import { Header } from './Header.tsx';
 import { initialAppState, useAppStorage } from './hooks/useAppStorage.ts';
 import { useKeyboardWatcher } from './hooks/useKeyboardWatcher.ts';
+import type { AppState, Boundary } from './types.ts';
 
 export function App() {
   const [appState, setAppState] = useAppStorage(initialAppState);

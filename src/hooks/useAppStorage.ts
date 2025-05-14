@@ -1,5 +1,6 @@
 import { useLocalStorage } from './useLocalStorage.ts';
-import { type AppState, BallDirection, MAX_BALL_SIZE } from '../constants.ts';
+import { MAX_BALL_SIZE } from '../constants.ts';
+import { type AppState, BallDirection } from '../types.ts';
 
 export const initialAppState: AppState = {
   bgColor: '#000000',
