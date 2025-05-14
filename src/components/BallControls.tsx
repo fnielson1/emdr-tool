@@ -1,17 +1,20 @@
 import { useRef } from 'react';
 
-import { BallRange } from './BallRange.tsx';
 import { BallSettings } from './BallSettings.tsx';
+import { RangeControl } from './RangeControl.tsx';
 import {
   BALL_SIZE_STEP,
   BALL_SPEED_STEP,
+  DURATION_STEP_SEC,
   MAX_BALL_SIZE,
   MAX_BALL_SPEED,
+  MAX_DURATION_SEC,
   MIN_BALL_SIZE,
   MIN_BALL_SPEED,
+  MIN_DURATION_SEC,
 } from '../constants.ts';
 import { useAppContext } from '../hooks/useAppContext.ts';
-import type { BallRangeChangeType } from '../types.ts';
+import type { RangeControlChangeType } from '../types.ts';
 
 export const BallControls = () => {
   const {
@@ -21,7 +24,7 @@ export const BallControls = () => {
     onUpdateState,
     onCancelUndo,
   } = useAppContext();
-  const { ballSize, ballSpeed } = appState;
+  const { ballSize, ballSpeed, duration } = appState;
   const wasRunningRef = useRef(false);
 
   const adjustBallSizeForStepSize = ballSize + BALL_SIZE_STEP;
@@ -35,15 +38,21 @@ export const BallControls = () => {
     onIsRunningChange(wasRunningRef.current);
   };
 
-  const handleBallSizeChange = (e: BallRangeChangeType) => {
+  const handleBallSizeChange = (e: RangeControlChangeType) => {
     const value = Number(e.currentTarget.value);
     onUpdateState({ ballSize: value });
     onCancelUndo();
   };
 
-  const handleBallSpeedChange = (e: BallRangeChangeType) => {
+  const handleBallSpeedChange = (e: RangeControlChangeType) => {
     const value = Number(e.currentTarget.value);
     onUpdateState({ ballSpeed: value });
+    onCancelUndo();
+  };
+
+  const handleDurationChange = (e: RangeControlChangeType) => {
+    const value = Number(e.currentTarget.value);
+    onUpdateState({ duration: value });
     onCancelUndo();
   };
 
@@ -54,14 +63,15 @@ export const BallControls = () => {
         title="[spacebar]"
         onClick={e => {
           e.stopPropagation();
-          onIsRunningChange(!isRunning, true);
+          onIsRunningChange(!isRunning);
         }}
         onFocus={e => e.target.blur()}
       >
         {isRunning ? 'Stop' : 'Start'}
       </button>
 
-      <BallRange
+      <RangeControl
+        className="flex-1/2"
         text={`Ball Size: ${adjustBallSizeForStepSize.toFixed(1)}`}
         value={adjustBallSizeForStepSize}
         onChange={handleBallSizeChange}
@@ -71,7 +81,7 @@ export const BallControls = () => {
         onFocus={e => e.target.blur()}
         title="Up Arrow, Down Arrow"
       />
-      <BallRange
+      <RangeControl
         text={`Ball Speed: ${ballSpeed.toFixed(1)}`}
         value={ballSpeed}
         min={MIN_BALL_SPEED}
@@ -82,6 +92,16 @@ export const BallControls = () => {
         onMouseUp={handleSpeedMouseUp}
         onFocus={e => e.target.blur()}
         title="Left Arrow, Right Arrow"
+      />
+      <RangeControl
+        text={`Duration (seconds): ${duration.toFixed(0)}`}
+        value={duration}
+        min={MIN_DURATION_SEC}
+        max={MAX_DURATION_SEC}
+        step={DURATION_STEP_SEC}
+        onChange={handleDurationChange}
+        onFocus={e => e.target.blur()}
+        title="How long do you desire the ball to move?"
       />
       <BallSettings />
     </div>

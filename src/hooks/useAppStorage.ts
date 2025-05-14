@@ -1,5 +1,5 @@
 import { useLocalStorage } from './useLocalStorage.ts';
-import { MAX_BALL_SIZE } from '../constants.ts';
+import { MAX_BALL_SIZE, MIN_DURATION_SEC } from '../constants.ts';
 import { type AppState, BallDirection } from '../types.ts';
 
 export const initialAppState: AppState = {
@@ -8,6 +8,7 @@ export const initialAppState: AppState = {
   ballSize: MAX_BALL_SIZE / 2,
   ballSpeed: 5,
   ballDirection: BallDirection.horizontal,
+  duration: MIN_DURATION_SEC,
 };
 
 export function useAppStorage(initialValue: AppState) {

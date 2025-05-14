@@ -32,20 +32,20 @@ export function determineBallLocation({
 
   const bounds = getBounds(emdrBoundary);
 
-  // Bounce off horizontal walls
-  if (nextX <= 0 || nextX + ballSize >= bounds.width) {
-    direction.x *= -1;
-  }
-
-  // Bounce off vertical walls
-  if (nextY <= 0 || nextY + ballSize >= bounds.height) {
-    direction.y *= -1;
-  }
-
   if (
     ballDirection === BallDirection.horizontal ||
     ballDirection === BallDirection.vertical
   ) {
+    // Bounce off horizontal walls
+    if (nextX <= 0 || nextX + ballSize >= bounds.width) {
+      direction.x *= -1;
+    }
+
+    // Bounce off vertical walls
+    if (nextY <= 0 || nextY + ballSize >= bounds.height) {
+      direction.y *= -1;
+    }
+
     // Apply updated movement
     return {
       x:

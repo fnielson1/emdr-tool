@@ -17,7 +17,7 @@ Be sure to download this to your local machine.
 Running this from a network location like Google Drive
 may result in the file being open as a text file instead
 of actually running it.  
-The other option is to `right-click` and select `Open with...`
+The other option is to `right-click` and select `Open with...`, and then select your desired browser.
 
 If using a mobile device, you will likely need to:
 1. `long press` to open the context menu 

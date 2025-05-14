@@ -1,8 +1,8 @@
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import { HamburgerIcon } from './HamburgerIcon.tsx';
 import { useAppContext } from '../hooks/useAppContext.ts';
-import { BallDirection, type BallRangeChangeType } from '../types.ts';
+import { BallDirection, type RangeControlChangeType } from '../types.ts';
 
 interface BallSettingsProps {
   className?: string;
@@ -16,40 +16,51 @@ export const BallSettings = ({ className }: BallSettingsProps) => {
     showUndo,
     onUndoClick,
     onResetClick,
+    onIsRunningChange,
   } = useAppContext();
   const { bgColor, ballColor, ballDirection } = appState;
 
-  const dropdownRef = useRef<HTMLDetailsElement>(null);
+  const dialogRef = useRef<HTMLDetailsElement>(null);
 
-  const handleBallColorChange = (e: BallRangeChangeType) => {
-    const value = e.currentTarget.value;
-    onUpdateState({ ballColor: value });
+  const handleSettingChanged = () => {
     onCancelUndo();
+    if (dialogRef.current) {
+      dialogRef.current.open = false;
+    }
   };
 
-  const handleBgColorChange = (e: BallRangeChangeType) => {
+  const handleBallColorChange = (e: RangeControlChangeType) => {
+    const value = e.currentTarget.value;
+    onUpdateState({ ballColor: value });
+    handleSettingChanged();
+  };
+
+  const handleBgColorChange = (e: RangeControlChangeType) => {
     const value = e.currentTarget.value;
     onUpdateState({ bgColor: value });
-    onCancelUndo();
+    handleSettingChanged();
   };
 
   const handleBallDirectionChange = (
     e: React.ChangeEvent<HTMLSelectElement>,
   ) => {
+    e.target.blur();
     const value = e.currentTarget.value as unknown as BallDirection;
     onUpdateState({ ballDirection: value });
-    onCancelUndo();
+    onIsRunningChange(false);
+    handleSettingChanged();
+  };
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      dialogRef.current &&
+      !dialogRef.current.contains(event.target as Node)
+    ) {
+      dialogRef.current.open = false;
+    }
   };
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        dropdownRef.current.open = false;
-      }
-    };
     document.addEventListener('click', handleClickOutside);
     return () => {
       document.removeEventListener('click', handleClickOutside);
@@ -57,7 +68,7 @@ export const BallSettings = ({ className }: BallSettingsProps) => {
   }, []);
 
   return (
-    <details className={`dropdown ${className}`} ref={dropdownRef}>
+    <details className={`dropdown ${className} z-10`} ref={dialogRef}>
       <summary
         className="btn m-1 flex flex-col gap-1 p-2"
         onFocus={e => e.target.blur()}

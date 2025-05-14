@@ -6,7 +6,7 @@ export interface AppContextValue {
   isRunning: boolean;
   onResetClick: () => void;
   onUndoClick: () => void;
-  onIsRunningChange: (value: boolean, resetAnimation?: boolean) => void;
+  onIsRunningChange: (value: boolean) => void;
   onUpdateState: (updatedValue: Partial<AppState>) => void;
   onCancelUndo: () => void;
   showUndo: boolean;

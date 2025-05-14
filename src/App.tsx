@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { AppContext } from './AppContext.ts';
 import { Ball } from './components/Ball.tsx';
@@ -12,7 +12,6 @@ export function App() {
   const [appState, setAppState] = useAppStorage(initialAppState);
   const { bgColor } = appState;
   const [isRunning, setIsRunning] = useState(false);
-  const [resetKey, forceUpdate] = useReducer(state => state + 1, 0);
   const [timeoutId, setTimeoutId] = useState<number | null>(null);
   const [previousState, setPreviousState] = useState<AppState | null>(null);
   const [emdrBoundary, setEmdrBoundary] = useState<Boundary>({
@@ -60,11 +59,8 @@ export function App() {
 
   useKeyboardWatcher(setAppState, handleCancelUndo);
 
-  const handleIsRunningChange = (value: boolean, resetAnimation?: boolean) => {
+  const handleIsRunningChange = (value: boolean) => {
     setIsRunning(value);
-    if (resetAnimation) {
-      forceUpdate();
-    }
   };
 
   useEffect(() => {
@@ -75,7 +71,6 @@ export function App() {
           break;
         case 'Escape':
           setIsRunning(false);
-          forceUpdate();
           break;
       }
     };
@@ -129,7 +124,7 @@ export function App() {
             backgroundColor: bgColor,
           }}
         >
-          <Ball key={resetKey} pause={!isRunning} />
+          <Ball pause={!isRunning} />
         </div>
       </div>
     </AppContext>

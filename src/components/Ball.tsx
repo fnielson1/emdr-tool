@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 
 import { determineBallLocation } from '../helpers/boundaryHelper.ts';
 import { useAppContext } from '../hooks/useAppContext.ts';
-import { type XY } from '../types.ts';
+import { BallDirection, type Boundary, type XY } from '../types.ts';
 
 interface BallProps {
   pause: boolean;
@@ -12,16 +12,23 @@ export const Ball = ({ pause }: BallProps) => {
   const { appState, emdrBoundary } = useAppContext();
   const { ballSize, ballColor, ballSpeed, ballDirection } = appState;
   const ballRef = useRef<HTMLDivElement>(null);
-  const locationRef = useRef<XY>({
-    x: 0,
-    y: 0,
-  });
-  const directionRef = useRef<XY>({ x: 1, y: 1 });
+  const locationRef = useRef<XY>({ x: 0, y: 0 });
+  const directionRef = useRef<XY>({ x: 0, y: 0 });
   const animationFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
     const moveBall = () => {
-      if (pause || !ballRef.current) return;
+      if (pause && ballRef.current) {
+        // Setup our initial values
+        directionRef.current = getInitialDirection(ballDirection);
+        locationRef.current = getInitialPosition(
+          emdrBoundary,
+          ballDirection,
+          ballSize,
+        );
+        ballRef.current.style.transform = `translate(${locationRef.current.x}px, ${locationRef.current.y}px)`;
+        return;
+      } else if (pause || !ballRef.current) return;
 
       locationRef.current = determineBallLocation({
         ballSpeed: ballSpeed,
@@ -61,3 +68,34 @@ export const Ball = ({ pause }: BallProps) => {
     ></div>
   );
 };
+
+function getInitialDirection(ballDirection: BallDirection): XY {
+  switch (ballDirection) {
+    case BallDirection.rightDiagonal:
+      return { x: 1, y: 1 };
+    case BallDirection.leftDiagonal:
+      return { x: -1, y: 1 };
+    case BallDirection.horizontal:
+      return { x: 1, y: 0 };
+    case BallDirection.vertical:
+      return { x: 0, y: 1 };
+    default:
+      return { x: 1, y: 1 };
+  }
+}
+
+function getInitialPosition(
+  emdrBoundary: Boundary,
+  ballDirection: BallDirection,
+  ballSize: number,
+): XY {
+  switch (ballDirection) {
+    case BallDirection.leftDiagonal:
+      return {
+        x: emdrBoundary.width - ballSize,
+        y: 0,
+      };
+    default:
+      return { x: 0, y: 0 };
+  }
+}

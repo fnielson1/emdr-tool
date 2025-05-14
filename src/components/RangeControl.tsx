@@ -1,13 +1,14 @@
+import { clsx } from 'clsx';
 import type { ComponentProps } from 'react';
 
-import { BallRangeChangeType } from '../types';
+import { RangeControlChangeType } from '../types';
 
 interface BallRangeProps extends Omit<ComponentProps<'input'>, 'onSelect'> {
   text: string;
-  onChange?: (e: BallRangeChangeType) => void;
+  onChange?: (e: RangeControlChangeType) => void;
 }
 
-export const BallRange = (props: BallRangeProps) => {
+export const RangeControl = (props: BallRangeProps) => {
   const { min, max, step, text, value, onChange, className, title } = props;
 
   const options: number[] = [];
@@ -18,7 +19,10 @@ export const BallRange = (props: BallRangeProps) => {
   return (
     <>
       <div
-        className={`hidden w-full flex-col justify-between md:visible md:flex ${className}`}
+        className={clsx(
+          `hidden w-full flex-col justify-between md:visible md:flex`,
+          className,
+        )}
       >
         {text}
         <input
