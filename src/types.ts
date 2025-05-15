@@ -34,7 +34,7 @@ export interface AppState {
   /**
    * How long the ball will bounce (seconds)
    */
-  duration: number;
+  durationSeconds: number;
 }
 
 export interface XY {

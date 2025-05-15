@@ -24,7 +24,7 @@ export const BallControls = () => {
     onUpdateState,
     onCancelUndo,
   } = useAppContext();
-  const { ballSize, ballSpeed, duration } = appState;
+  const { ballSize, ballSpeed, durationSeconds } = appState;
   const wasRunningRef = useRef(false);
 
   const adjustBallSizeForStepSize = ballSize + BALL_SIZE_STEP;
@@ -52,7 +52,7 @@ export const BallControls = () => {
 
   const handleDurationChange = (e: RangeControlChangeType) => {
     const value = Number(e.currentTarget.value);
-    onUpdateState({ duration: value });
+    onUpdateState({ durationSeconds: value });
     onCancelUndo();
   };
 
@@ -94,8 +94,8 @@ export const BallControls = () => {
         title="Left Arrow, Right Arrow"
       />
       <RangeControl
-        text={`Duration (seconds): ${duration.toFixed(0)}`}
-        value={duration}
+        text={`Duration (seconds): ${durationSeconds.toFixed(0)}`}
+        value={durationSeconds}
         min={MIN_DURATION_SEC}
         max={MAX_DURATION_SEC}
         step={DURATION_STEP_SEC}

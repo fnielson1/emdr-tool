@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppContext } from './AppContext.ts';
 import { Ball } from './components/Ball.tsx';
 import { BallControls } from './components/BallControls.tsx';
+import { UNDO_TIMEOUT_MS } from './constants.ts';
 import { Header } from './Header.tsx';
 import { initialAppState, useAppStorage } from './hooks/useAppStorage.ts';
 import { useKeyboardWatcher } from './hooks/useKeyboardWatcher.ts';
@@ -35,7 +36,7 @@ export function App() {
     // Set a timer for undo
     const id = window.setTimeout(() => {
       setPreviousState(null);
-    }, 3000);
+    }, UNDO_TIMEOUT_MS);
     setTimeoutId(id);
   }, [appState, setAppState, timeoutId]);
 

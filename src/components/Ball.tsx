@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { determineBallLocation } from '../helpers/boundaryHelper.ts';
 import { useAppContext } from '../hooks/useAppContext.ts';
@@ -9,24 +9,44 @@ interface BallProps {
 }
 
 export const Ball = ({ pause }: BallProps) => {
-  const { appState, emdrBoundary } = useAppContext();
-  const { ballSize, ballColor, ballSpeed, ballDirection } = appState;
+  const { appState, emdrBoundary, onIsRunningChange } = useAppContext();
+  const { ballSize, ballColor, ballSpeed, ballDirection, durationSeconds } =
+    appState;
   const ballRef = useRef<HTMLDivElement>(null);
-  const locationRef = useRef<XY>({ x: 0, y: 0 });
-  const directionRef = useRef<XY>({ x: 0, y: 0 });
+  const locationRef = useRef<XY>(getInitialDirection(ballDirection));
+  const directionRef = useRef<XY>(
+    getInitialPosition(emdrBoundary, ballDirection, ballSize),
+  );
+  const startTimeRef = useRef<number>(0);
   const animationFrameRef = useRef<number | null>(null);
+
+  const reset = useCallback(() => {
+    // Setup our initial values
+    startTimeRef.current = Date.now();
+    directionRef.current = getInitialDirection(ballDirection);
+    locationRef.current = getInitialPosition(
+      emdrBoundary,
+      ballDirection,
+      ballSize,
+    );
+    if (ballRef.current) {
+      ballRef.current.style.transform = `translate(${locationRef.current.x}px, ${locationRef.current.y}px)`;
+    }
+  }, [ballDirection, ballSize, emdrBoundary]);
 
   useEffect(() => {
     const moveBall = () => {
+      const currentTime = Date.now();
+      const durationIsDone = pause
+        ? false
+        : currentTime >= startTimeRef.current + durationSeconds * 1000;
+
+      if (durationIsDone) {
+        onIsRunningChange(false);
+      }
+
       if (pause && ballRef.current) {
-        // Setup our initial values
-        directionRef.current = getInitialDirection(ballDirection);
-        locationRef.current = getInitialPosition(
-          emdrBoundary,
-          ballDirection,
-          ballSize,
-        );
-        ballRef.current.style.transform = `translate(${locationRef.current.x}px, ${locationRef.current.y}px)`;
+        reset();
         return;
       } else if (pause || !ballRef.current) return;
 
@@ -52,7 +72,16 @@ export const Ball = ({ pause }: BallProps) => {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [ballDirection, ballSize, ballSpeed, emdrBoundary, pause]);
+  }, [
+    ballDirection,
+    ballSize,
+    ballSpeed,
+    durationSeconds,
+    emdrBoundary,
+    onIsRunningChange,
+    pause,
+    reset,
+  ]);
 
   return (
     <div

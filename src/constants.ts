@@ -8,3 +8,5 @@ export const BALL_SPEED_STEP = 0.5;
 export const MIN_DURATION_SEC = 10;
 export const MAX_DURATION_SEC = 120; // 2 minutes
 export const DURATION_STEP_SEC = 5;
+
+export const UNDO_TIMEOUT_MS = 3000;

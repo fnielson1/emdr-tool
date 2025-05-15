@@ -8,7 +8,7 @@ export const initialAppState: AppState = {
   ballSize: MAX_BALL_SIZE / 2,
   ballSpeed: 5,
   ballDirection: BallDirection.horizontal,
-  duration: MIN_DURATION_SEC,
+  durationSeconds: MIN_DURATION_SEC,
 };
 
 export function useAppStorage(initialValue: AppState) {
