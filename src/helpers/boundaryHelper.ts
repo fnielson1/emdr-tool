@@ -86,3 +86,8 @@ export function determineBallLocation({
   }
   throw new Error(`Ball Direction is not exist: ${ballDirection}`);
 }
+
+export function normalize(vec: XY): XY {
+  const length = Math.sqrt(vec.x ** 2 + vec.y ** 2);
+  return { x: vec.x / length, y: vec.y / length };
+}

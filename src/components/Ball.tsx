@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 
-import { determineBallLocation } from '../helpers/boundaryHelper.ts';
+import { determineBallLocation, normalize } from '../helpers/boundaryHelper.ts';
 import { useAppContext } from '../hooks/useAppContext.ts';
 import { BallDirection, type Boundary, type XY } from '../types.ts';
 
@@ -13,7 +13,9 @@ export const Ball = ({ pause }: BallProps) => {
   const { ballSize, ballColor, ballSpeed, ballDirection, durationSeconds } =
     appState;
   const ballRef = useRef<HTMLDivElement>(null);
-  const locationRef = useRef<XY>(getInitialDirection(ballDirection));
+  const locationRef = useRef<XY>(
+    getInitialDirection(emdrBoundary, ballDirection),
+  );
   const directionRef = useRef<XY>(
     getInitialPosition(emdrBoundary, ballDirection, ballSize),
   );
@@ -23,7 +25,7 @@ export const Ball = ({ pause }: BallProps) => {
   const reset = useCallback(() => {
     // Setup our initial values
     startTimeRef.current = Date.now();
-    directionRef.current = getInitialDirection(ballDirection);
+    directionRef.current = getInitialDirection(emdrBoundary, ballDirection);
     locationRef.current = getInitialPosition(
       emdrBoundary,
       ballDirection,
@@ -98,12 +100,19 @@ export const Ball = ({ pause }: BallProps) => {
   );
 };
 
-function getInitialDirection(ballDirection: BallDirection): XY {
+function getInitialDirection(
+  emdrBoundary: Boundary,
+  ballDirection: BallDirection,
+): XY {
+  const width = emdrBoundary.width;
+  const height = emdrBoundary.height;
+  const aspectRatio = height / width;
+
   switch (ballDirection) {
     case BallDirection.rightDiagonal:
-      return { x: 1, y: 1 };
+      return normalize({ x: 1, y: aspectRatio });
     case BallDirection.leftDiagonal:
-      return { x: -1, y: 1 };
+      return normalize({ x: -1, y: aspectRatio });
     case BallDirection.horizontal:
       return { x: 1, y: 0 };
     case BallDirection.vertical:
